@@ -1,0 +1,13 @@
+name: TabCompleted
+version: '${version}'
+main: rs.jamie.tabcompleted.TabCompletedPlugin
+api-version: '1.19'
+authors: [Summiner]
+softdepend:
+  - ProtocolLib
+  - ProtocolSupport
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - Geyser-Spigot
+  - PlaceholderAPI
