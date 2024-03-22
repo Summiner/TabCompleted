@@ -9,6 +9,15 @@ import org.bukkit.entity.Player;
 
 public class TabUtil {
 
+    public static void updateTab(Player player, Component header, Component footer, WrapperPlayServerPlayerInfoUpdate tablistPacket) {
+        WrapperPlayServerPlayerListHeaderAndFooter wrapper = new WrapperPlayServerPlayerListHeaderAndFooter(header, footer);
+        User user = PacketEvents.getAPI().getPlayerManager().getUser(player);
+        if(user!=null) {
+            user.sendPacket(wrapper);
+            user.sendPacket(tablistPacket);
+        }
+    }
+
     public static void updateTab(Player player, Component header, Component footer) {
         WrapperPlayServerPlayerListHeaderAndFooter wrapper = new WrapperPlayServerPlayerListHeaderAndFooter(header, footer);
         User user = PacketEvents.getAPI().getPlayerManager().getUser(player);
