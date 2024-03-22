@@ -13,7 +13,7 @@ public final class TabCompletedPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getDataFolder().mkdirs();
+        this.saveDefaultConfig();
         ConfigManager configManager = new ConfigManager(getDataFolder());
         packetManager = new PacketManager(this, configManager);
         new TabUpdateTask(this, configManager);

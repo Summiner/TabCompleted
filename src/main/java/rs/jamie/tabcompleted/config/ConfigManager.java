@@ -9,6 +9,7 @@ import space.arim.dazzleconf.ext.snakeyaml.SnakeYamlConfigurationFactory;
 import space.arim.dazzleconf.ext.snakeyaml.SnakeYamlOptions;
 import space.arim.dazzleconf.helper.ConfigurationHelper;
 import space.arim.dazzleconf.serialiser.ValueSerialiser;
+import space.arim.dazzleconf.sorter.AnnotationBasedSorter;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,7 @@ public class ConfigManager {
     private static <T> ConfigurationHelper<T> createHelper(Class<T> configClass, File file, ValueSerialiser<?>... serializers) {
         SnakeYamlOptions yamlOptions = new SnakeYamlOptions.Builder().commentMode(CommentMode.fullComments()).build();
         ConfigurationOptions.Builder optionBuilder = new ConfigurationOptions.Builder();
+        optionBuilder.sorter(new AnnotationBasedSorter());
         if (serializers != null && serializers.length > 0) optionBuilder.addSerialisers(serializers);
         ConfigurationFactory<T> configFactory = SnakeYamlConfigurationFactory.create(configClass, optionBuilder.build(), yamlOptions);
         return new ConfigurationHelper<>(file.getParentFile().toPath(), file.getName(), configFactory);

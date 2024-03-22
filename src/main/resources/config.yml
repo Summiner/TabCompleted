@@ -1,0 +1,6 @@
+# The top text of the tab menu
+header: '<newline><rainbow>test</rainbow><newline>'
+# The bottom text of the tab menu
+footer: '<newline><gray>Ping: <white>%player_ping%<newline>'
+# Format for the player's tab display name, works with PAPI
+player-name: '%luckperms_prefix%%player_name%'
