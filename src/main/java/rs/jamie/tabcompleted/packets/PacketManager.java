@@ -5,7 +5,7 @@ import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bukkit.plugin.Plugin;
 import rs.jamie.tabcompleted.config.ConfigManager;
-import rs.jamie.tabcompleted.packets.listeners.PlayerTeleportListener;
+import rs.jamie.tabcompleted.packets.listeners.PlayerInfoListener;
 
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
@@ -34,7 +34,7 @@ public class PacketManager {
     public CompletableFuture<Void> reload() {
         return CompletableFuture.runAsync(() -> {
             unload();
-//            listeners.put("PlayerTeleport", new PlayerTeleportListener(config));
+            listeners.put("PlayerInfo", new PlayerInfoListener(config));
             listeners.forEach((key,value) -> PacketEvents.getAPI().getEventManager().registerListener(value));
         });
     }
