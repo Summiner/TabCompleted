@@ -43,7 +43,7 @@ public class PlayerInfoListener extends SimplePacketListenerAbstract {
         wrapper2.getEntries().forEach((playerData) -> {
             Player player = Bukkit.getPlayer(playerData.getGameProfile().getUUID());
             if(player==null) return;
-            playerData.setDisplayName(PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().playerName()));
+            playerData.setDisplayName(PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().tablistPlayerName()));
             playerInfo.add(playerData);
         });
         wrapper2.setEntries(playerInfo);

@@ -1,5 +1,6 @@
 package rs.jamie.tabcompleted;
 
+import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -8,6 +9,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import rs.jamie.tabcompleted.config.ConfigManager;
 import rs.jamie.tabcompleted.events.PlayerLoginEvent;
 import rs.jamie.tabcompleted.packets.PacketManager;
+import rs.jamie.tabcompleted.tasks.ScoreboardUpdateTask;
 import rs.jamie.tabcompleted.tasks.TabUpdateTask;
 
 public final class TabCompletedPlugin extends JavaPlugin {
@@ -25,6 +27,7 @@ public final class TabCompletedPlugin extends JavaPlugin {
         packetManager = new PacketManager(this, configManager);
         scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         new TabUpdateTask(this, configManager, luckperms, scoreboard);
+        new ScoreboardUpdateTask(this, configManager);
         Bukkit.getPluginManager().registerEvents(new PlayerLoginEvent(configManager, scoreboard), this);
     }
 

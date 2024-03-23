@@ -17,11 +17,11 @@ import org.bukkit.scoreboard.Team;
 import rs.jamie.tabcompleted.config.ConfigManager;
 import rs.jamie.tabcompleted.utils.LuckPermsUtil;
 import rs.jamie.tabcompleted.utils.PapiUtil;
+import rs.jamie.tabcompleted.utils.ScoreboardUtil;
 import rs.jamie.tabcompleted.utils.TabUtil;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate.Action.*;
@@ -52,7 +52,7 @@ public class TabUpdateTask {
             }
             WrapperPlayServerPlayerInfoUpdate test = new WrapperPlayServerPlayerInfoUpdate(EnumSet.of(ADD_PLAYER, INITIALIZE_CHAT, UPDATE_GAME_MODE, UPDATE_LISTED, UPDATE_LATENCY, UPDATE_DISPLAY_NAME), info);
             Bukkit.getOnlinePlayers().forEach((player) -> {
-                TabUtil.updateTab(player, PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().header()), PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().footer()), test);
+                TabUtil.updateTab(player, PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().tablistHeader()), PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().tablistFooter()), test);
             });
         }, 0L, 20L);
     }

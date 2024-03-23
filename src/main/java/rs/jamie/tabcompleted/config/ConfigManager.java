@@ -16,15 +16,13 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 public class ConfigManager {
-
     private final static Logger logger = Logger.getLogger("TabCompleted Config Manager");
-
 
     private volatile MainConfig config;
     private final ConfigurationHelper<MainConfig> configHelper;
 
     public ConfigManager(File pluginFolder) {
-        configHelper = createHelper(MainConfig.class, new File(pluginFolder, "config.yml"), new ComponentSerializer());
+        configHelper = createHelper(MainConfig.class, new File(pluginFolder, "config.yml"), new ComponentSerializer(), new ComponentListSerializer());
         reload();
     }
 
@@ -54,5 +52,4 @@ public class ConfigManager {
     public MainConfig getConfig() {
         return config;
     }
-
 }

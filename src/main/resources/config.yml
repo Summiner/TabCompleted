@@ -1,6 +1,16 @@
-# The top text of the tab menu
-header: '<newline><rainbow>Your Server!</rainbow><newline>'
-# The bottom text of the tab menu
-footer: '<newline><gray>Ping: <white>%player_ping%<newline>'
-# Format for the player's tab display name, works with PAPI
-player-name: '%luckperms_prefix%%player_name%'
+tablist:
+  # The top text of the tab menu
+  header: '<newline><rainbow>Your Server!</rainbow><newline>'
+  # The bottom text of the tab menu
+  footer: '<newline><gray>Ping: <white>%player_ping%<newline>'
+  # Format for the player's tab display name, works with PAPI
+  player-name: '%luckperms_prefix%%player_name%'
+scoreboard:
+  # Should the scoreboard feature of this plugin be enabled?
+  enabled: true
+  # Scoreboard name that is displayed for the player
+  name: "<rainbow>Your Server!</rainbow>"
+  # Scoreboard entries to be displayed for the player
+  entries:
+    - "<gray>Ping: <white>%player_ping%"
+    - "<red>Test"

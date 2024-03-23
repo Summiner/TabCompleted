@@ -8,6 +8,10 @@ import space.arim.dazzleconf.serialiser.Decomposer;
 import space.arim.dazzleconf.serialiser.FlexibleType;
 import space.arim.dazzleconf.serialiser.ValueSerialiser;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class ComponentSerializer implements ValueSerialiser<Component> {
     @Override
     public Class<Component> getTargetClass() {
