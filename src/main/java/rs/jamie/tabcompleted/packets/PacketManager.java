@@ -3,6 +3,7 @@ package rs.jamie.tabcompleted.packets;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import net.luckperms.api.LuckPerms;
 import org.bukkit.plugin.Plugin;
 import rs.jamie.tabcompleted.config.ConfigManager;
 import rs.jamie.tabcompleted.packets.listeners.PlayerInfoListener;

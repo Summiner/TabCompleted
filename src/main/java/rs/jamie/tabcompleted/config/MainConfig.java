@@ -11,13 +11,13 @@ public interface MainConfig {
     @ConfKey("header")
     @Order(1)
     @ConfComments("The top text of the tab menu")
-    @DefaultString("<red><bold>Your Server!")
+    @DefaultString("<newline><rainbow>Your Server!</rainbow><newline>")
     Component header();
 
     @ConfKey("footer")
     @Order(2)
     @ConfComments("The bottom text of the tab menu")
-    @DefaultString("<grey>Ping: <white>%player_ping%")
+    @DefaultString("<newline><gray>Ping: <white>%player_ping%<newline>")
     Component footer();
 
     @ConfKey("player-name")

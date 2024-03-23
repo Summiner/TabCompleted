@@ -37,6 +37,7 @@ dependencies {
     shadow("com.github.retrooper.packetevents:spigot:2.2.0") // Packets
     shadow("space.arim.dazzleconf:dazzleconf-ext-snakeyaml:1.2.1")
     shadow("org.yaml:snakeyaml:1.28")
+    compileOnly("net.luckperms:api:5.4")
     compileOnly("me.clip:placeholderapi:2.11.5")
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
 }

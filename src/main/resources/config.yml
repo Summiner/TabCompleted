@@ -1,5 +1,5 @@
 # The top text of the tab menu
-header: '<newline><rainbow>test</rainbow><newline>'
+header: '<newline><rainbow>Your Server!</rainbow><newline>'
 # The bottom text of the tab menu
 footer: '<newline><gray>Ping: <white>%player_ping%<newline>'
 # Format for the player's tab display name, works with PAPI
