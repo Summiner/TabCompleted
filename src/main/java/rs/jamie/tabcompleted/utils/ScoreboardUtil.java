@@ -21,7 +21,7 @@ public class ScoreboardUtil {
         CompletableFuture.supplyAsync(() -> {
             User user = PacketEvents.getAPI().getPlayerManager().getUser(player);
             user.sendPacket(new WrapperPlayServerResetScore(user.getName(), null));
-            user.sendPacket(new WrapperPlayServerScoreboardObjective("TabListed-Scoreboard", WrapperPlayServerScoreboardObjective.ObjectiveMode.CREATE, displayName, WrapperPlayServerScoreboardObjective.RenderType.INTEGER));
+            user.sendPacket(new WrapperPlayServerScoreboardObjective("TabListed-Scoreboard", WrapperPlayServerScoreboardObjective.ObjectiveMode.CREATE, PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, displayName), WrapperPlayServerScoreboardObjective.RenderType.INTEGER));
             user.sendPacket(new WrapperPlayServerDisplayScoreboard(1, "TabListed-Scoreboard"));
             setScoreboard(player, defaultScores);
             return null;
@@ -34,7 +34,7 @@ public class ScoreboardUtil {
             Component[] scores = PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, defaultScores);
             user.sendPacket(new WrapperPlayServerResetScore(user.getName(), null));
             for (int i=0;i<scores.length;i++) {
-                user.sendPacket(new WrapperPlayServerUpdateScore("TabListed-Scoreboard-Entry-"+i, WrapperPlayServerUpdateScore.Action.CREATE_OR_UPDATE_ITEM, "TabListed-Scoreboard", i, scores[i], ScoreFormat.blankScore()));
+                user.sendPacket(new WrapperPlayServerUpdateScore("TabListed-Scoreboard-Entry-"+i, WrapperPlayServerUpdateScore.Action.CREATE_OR_UPDATE_ITEM, "TabListed-Scoreboard", scores.length-i, scores[i], ScoreFormat.blankScore()));
             }
             return null;
         });

@@ -22,11 +22,14 @@ import rs.jamie.tabcompleted.utils.TabUtil;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate.Action.*;
 
 public class TabUpdateTask {
+
+    HashMap<Player, String> lastTeam = new HashMap<>();
 
     private String getTeamName(int weight) {
         return "TabListed-Weighted-" + Character.MAX_VALUE + (Character.MAX_VALUE - (char) weight);
@@ -36,19 +39,27 @@ public class TabUpdateTask {
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             List<PlayerInfo> info = new ArrayList<>();
             //this looks so ugly but it works for now!
-            for (Team team : scoreboard.getTeams()) {
-                team.removeEntries(team.getEntries());
-            }
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                lastTeam.putIfAbsent(onlinePlayer, "");
+                String last = lastTeam.get(onlinePlayer);
                 int weight = LuckPermsUtil.getWeight(onlinePlayer.getUniqueId(), luckPerms);
                 String teamName = getTeamName(weight);
-                try {
-                    scoreboard.getTeam(teamName).addEntry(onlinePlayer.getName());
-                } catch (IllegalArgumentException | NullPointerException ignored) {
-                    scoreboard.registerNewTeam(teamName).addEntry(onlinePlayer.getName());
+                if(!teamName.equals(last)) {
+                    if(!teamName.isEmpty()) {
+                        try {
+                            scoreboard.getTeam(last).removeEntry(onlinePlayer.getName());
+                        } catch (IllegalArgumentException | NullPointerException ignored) {
+                        }
+                    }
+                    try {
+                        scoreboard.getTeam(teamName).addEntry(onlinePlayer.getName());
+                    } catch (IllegalArgumentException | NullPointerException ignored) {
+                        scoreboard.registerNewTeam(teamName).addEntry(onlinePlayer.getName());
+                    }
+                    User user = PacketEvents.getAPI().getPlayerManager().getUser(onlinePlayer);
+                    info.add(new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(user.getProfile(), true, onlinePlayer.getPing(), GameMode.getById(onlinePlayer.getGameMode().getValue()), Component.text(onlinePlayer.getName()), null));
+                    lastTeam.put(onlinePlayer, teamName);
                 }
-                User user = PacketEvents.getAPI().getPlayerManager().getUser(onlinePlayer);
-                info.add(new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(user.getProfile(), true, onlinePlayer.getPing(), GameMode.getById(onlinePlayer.getGameMode().getValue()), Component.text(onlinePlayer.getName()), null));
             }
             WrapperPlayServerPlayerInfoUpdate test = new WrapperPlayServerPlayerInfoUpdate(EnumSet.of(ADD_PLAYER, INITIALIZE_CHAT, UPDATE_GAME_MODE, UPDATE_LISTED, UPDATE_LATENCY, UPDATE_DISPLAY_NAME), info);
             Bukkit.getOnlinePlayers().forEach((player) -> {
