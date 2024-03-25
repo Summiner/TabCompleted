@@ -44,7 +44,10 @@ public class PlayerLoginEvent implements Listener {
         for (Team team : scoreboard.getTeams()) {
             team.removeEntry(player.getName());
         }
+
+        //CHANGE
         player.setScoreboard(scoreboard);
+
         TabUtil.updateTab(player, PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().tablistHeader()), PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().tablistFooter()));
         ScoreboardUtil.setupScoreboard(player, config.getConfig().scoreboardName(), config.getConfig().scoreboardEntries());
     }

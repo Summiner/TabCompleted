@@ -11,6 +11,7 @@ import rs.jamie.tabcompleted.events.PlayerLoginEvent;
 import rs.jamie.tabcompleted.packets.PacketManager;
 import rs.jamie.tabcompleted.tasks.ScoreboardUpdateTask;
 import rs.jamie.tabcompleted.tasks.TabUpdateTask;
+import rs.jamie.tabcompleted.tasks.TeamUpdateTask;
 
 public final class TabCompletedPlugin extends JavaPlugin {
 
@@ -26,7 +27,8 @@ public final class TabCompletedPlugin extends JavaPlugin {
         if (provider != null) luckperms = provider.getProvider();
         packetManager = new PacketManager(this, configManager);
         scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        new TabUpdateTask(this, configManager, luckperms, scoreboard);
+        new TabUpdateTask(this, configManager);
+        new TeamUpdateTask(this, configManager, luckperms);
         new ScoreboardUpdateTask(this, configManager);
         Bukkit.getPluginManager().registerEvents(new PlayerLoginEvent(configManager, scoreboard), this);
     }

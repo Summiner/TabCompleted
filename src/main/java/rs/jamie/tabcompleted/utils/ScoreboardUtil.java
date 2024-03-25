@@ -10,9 +10,6 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerUp
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
-
-import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class ScoreboardUtil {

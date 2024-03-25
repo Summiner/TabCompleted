@@ -28,21 +28,39 @@ public interface MainConfig {
     @DefaultString("%luckperms_prefix%%player_name%")
     Component tablistPlayerName();
 
-    @ConfKey("scoreboard.enabled")
+    @ConfKey("nametag.prefix")
     @Order(4)
+    @ConfComments("Prefix that is added to the player's nametag")
+    @DefaultString("%luckperms_prefix%")
+    Component nametagPrefix();
+
+    @ConfKey("nametag.suffix")
+    @Order(5)
+    @ConfComments("Suffix that is added to the player's nametag")
+    @DefaultString("%luckperms_suffix%")
+    Component nametagSuffix();
+
+    @ConfKey("scoreboard.enabled")
+    @Order(6)
     @ConfComments("Should the scoreboard feature of this plugin be enabled?")
     @ConfDefault.DefaultBoolean(true)
     Boolean scoreboardEnabled();
 
     @ConfKey("scoreboard.name")
-    @Order(5)
+    @Order(7)
     @ConfComments("Scoreboard name that is displayed for the player")
     @DefaultString("<rainbow>Your Server!</rainbow>")
     Component scoreboardName();
 
     @ConfKey("scoreboard.entries")
-    @Order(6)
+    @Order(8)
     @ConfComments("Scoreboard entries to be displayed for the player")
     @ConfDefault.DefaultStrings({"<gray>Ping: <white>%player_ping%", "<red>Test"})
     Component[] scoreboardEntries();
+
+    @ConfKey("misc.collision")
+    @Order(9)
+    @ConfComments("Should player collision be enabled?")
+    @ConfDefault.DefaultBoolean(true)
+    Boolean miscCollision();
 }

@@ -37,17 +37,17 @@ public class PlayerInfoListener extends SimplePacketListenerAbstract {
     @Override
     public void onPacketPlaySend(PacketPlaySendEvent event) {
         if (event.getPacketType() != PacketType.Play.Server.PLAYER_INFO_UPDATE) return;
-        WrapperPlayServerPlayerInfoUpdate wrapper = new WrapperPlayServerPlayerInfoUpdate(event);
-        WrapperPlayServerPlayerInfoUpdate wrapper2 = new WrapperPlayServerPlayerInfoUpdate(wrapper.getActions(), wrapper.getEntries());
+        WrapperPlayServerPlayerInfoUpdate init_wrapper = new WrapperPlayServerPlayerInfoUpdate(event);
+        WrapperPlayServerPlayerInfoUpdate wrapper = new WrapperPlayServerPlayerInfoUpdate(init_wrapper.getActions(), init_wrapper.getEntries());
         List<WrapperPlayServerPlayerInfoUpdate.PlayerInfo> playerInfo = new ArrayList<>();
-        wrapper2.getEntries().forEach((playerData) -> {
+        wrapper.getEntries().forEach((playerData) -> {
             Player player = Bukkit.getPlayer(playerData.getGameProfile().getUUID());
             if(player==null) return;
             playerData.setDisplayName(PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().tablistPlayerName()));
             playerInfo.add(playerData);
         });
-        wrapper2.setEntries(playerInfo);
-        event.getUser().sendPacketSilently(wrapper2);
+        wrapper.setEntries(playerInfo);
+        event.getUser().sendPacketSilently(wrapper);
         event.setCancelled(true);
     }
 

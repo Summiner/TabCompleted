@@ -5,6 +5,9 @@ tablist:
   footer: '<newline><gray>Ping: <white>%player_ping%<newline>'
   # Format for the player's tab display name, works with PAPI
   player-name: '%luckperms_prefix%%player_name%'
+nametag:
+  prefix: "%luckperms_prefix%%player_name%%luckperms_suffix%"
+  suffix: "%luckperms_suffix%"
 scoreboard:
   # Should the scoreboard feature of this plugin be enabled?
   enabled: true
@@ -14,3 +17,5 @@ scoreboard:
   entries:
     - "<gray>Ping: <white>%player_ping%"
     - "<red>Test"
+misc:
+  collision: true
