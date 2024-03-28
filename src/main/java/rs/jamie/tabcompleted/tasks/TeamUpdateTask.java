@@ -19,6 +19,7 @@ import rs.jamie.tabcompleted.utils.PapiUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import static com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams.TeamMode;
 import static com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams.CollisionRule;
@@ -29,7 +30,7 @@ import static com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayS
 
 public class TeamUpdateTask {
 
-    HashMap<Player, String> lastTeams = new HashMap<>();
+    public static HashMap<UUID, String> lastTeams = new HashMap<>();
     private final PlayerManager playerManager;
 
     private String getTeamName(int weight, int entityID) {
@@ -59,8 +60,8 @@ public class TeamUpdateTask {
             List<WrapperPlayServerTeams> packets = new ArrayList<>();
             CollisionRule collision = config.getConfig().miscCollision()?CollisionRule.ALWAYS:CollisionRule.NEVER;
             for (Player player : Bukkit.getOnlinePlayers()) {
-                lastTeams.putIfAbsent(player, "");
-                String lastTeam = lastTeams.get(player);
+                lastTeams.putIfAbsent(player.getUniqueId(), "");
+                String lastTeam = lastTeams.get(player.getUniqueId());
                 int weight = LuckPermsUtil.getWeight(player.getUniqueId(), luckPerms);
                 String teamName = getTeamName(weight, player.getEntityId());
                 if(!teamName.equals(lastTeam)) {
@@ -73,7 +74,7 @@ public class TeamUpdateTask {
                             NameTagVisibility.ALWAYS, collision, NamedTextColor.nearestTo(getLastColor(prefix)), OptionData.NONE);
                     packets.add(new WrapperPlayServerTeams(teamName, TeamMode.CREATE, teamInfo, player.getName()));
                 }
-                lastTeams.put(player, teamName);
+                lastTeams.put(player.getUniqueId(), teamName);
             }
             Bukkit.getOnlinePlayers().forEach((player) -> {
                 packets.forEach((packet) -> {

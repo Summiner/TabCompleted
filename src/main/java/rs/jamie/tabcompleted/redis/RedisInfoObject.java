@@ -4,6 +4,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPl
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import rs.jamie.tabcompleted.config.ComponentSerializer;
+import rs.jamie.tabcompleted.tasks.TeamUpdateTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class RedisInfoObject {
     public static List<PlayerInfoObject> serialize(List<WrapperPlayServerPlayerInfoUpdate.PlayerInfo> playerInfo) {
         List<PlayerInfoObject> list = new ArrayList<>();
         for (WrapperPlayServerPlayerInfoUpdate.PlayerInfo info : playerInfo) {
-            list.add(new PlayerInfoObject(info.getGameProfile(), info.getLatency(), info.getGameMode(), MiniMessage.miniMessage().serialize(info.getDisplayName()!=null?info.getDisplayName():Component.text(""))));
+            list.add(new PlayerInfoObject(info.getGameProfile(), info.getLatency(), info.getGameMode(), MiniMessage.miniMessage().serialize(info.getDisplayName()!=null?info.getDisplayName():Component.text("")), TeamUpdateTask.lastTeams.get(info.getGameProfile().getUUID())));
         }
         return list;
     }

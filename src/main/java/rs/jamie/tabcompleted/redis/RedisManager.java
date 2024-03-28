@@ -1,10 +1,15 @@
 package rs.jamie.tabcompleted.redis;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.manager.player.PlayerManager;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
@@ -13,12 +18,13 @@ import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import rs.jamie.tabcompleted.config.ConfigManager;
+import rs.jamie.tabcompleted.tasks.TeamUpdateTask;
+import rs.jamie.tabcompleted.utils.LuckPermsUtil;
 import rs.jamie.tabcompleted.utils.PapiUtil;
 import rs.jamie.tabcompleted.utils.TabUtil;
 
 import java.lang.reflect.Type;
-import java.util.EnumSet;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
@@ -29,6 +35,7 @@ public class RedisManager {
 
 
     private final ConfigManager config;
+    private final PlayerManager playerManager;
     private final Gson gson;
     private Jedis publisher;
     private Jedis subscriber;
@@ -36,6 +43,7 @@ public class RedisManager {
     public RedisManager(Plugin plugin, ConfigManager config) {
         Logger logger = plugin.getLogger();
         this.config = config;
+        playerManager = PacketEvents.getAPI().getPlayerManager();
         gson = new Gson();
         CompletableFuture.supplyAsync(() -> {
             try {
@@ -66,8 +74,30 @@ public class RedisManager {
                     RedisInfoObject packetObject = deserialize(message);
                     if (!Objects.equals(packetObject.getServer(), config.getConfig().multiserverName())) {
                         if(packetObject.getType()==InfoType.UPDATE) {
+                            List<WrapperPlayServerPlayerInfoUpdate.PlayerInfo> playerInfo = new ArrayList<>();
+                            List<WrapperPlayServerTeams> packets = new ArrayList<>();
+                            WrapperPlayServerTeams.CollisionRule collision = config.getConfig().miscCollision()? WrapperPlayServerTeams.CollisionRule.ALWAYS: WrapperPlayServerTeams.CollisionRule.NEVER;
+                            for (PlayerInfoObject info : packetObject.getObjects()) {
+                                UUID uuid = info.gameProfile().getUUID();
+                                playerInfo.add(new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(info.gameProfile(), true, info.ping(), info.gameMode(), MiniMessage.miniMessage().deserialize(info.displayName()), null));
+                                TeamUpdateTask.lastTeams.putIfAbsent(uuid, "");
+                                String lastTeam = TeamUpdateTask.lastTeams.get(uuid);
+                                String team = info.team();
+                                if(!team.equals(lastTeam)) {
+                                    if(!team.isEmpty()) {
+                                        packets.add(new WrapperPlayServerTeams(lastTeam, WrapperPlayServerTeams.TeamMode.REMOVE, (WrapperPlayServerTeams.ScoreBoardTeamInfo) null, info.gameProfile().getName()));
+                                    }
+                                    WrapperPlayServerTeams.ScoreBoardTeamInfo teamInfo = new WrapperPlayServerTeams.ScoreBoardTeamInfo(Component.text(""), Component.text(""), Component.text(""),
+                                            WrapperPlayServerTeams.NameTagVisibility.NEVER, collision, NamedTextColor.WHITE, WrapperPlayServerTeams.OptionData.NONE);
+                                    packets.add(new WrapperPlayServerTeams(team, WrapperPlayServerTeams.TeamMode.CREATE, teamInfo, info.gameProfile().getName()));
+                                }
+                                TeamUpdateTask.lastTeams.put(uuid, team);
+                            }
                             Bukkit.getOnlinePlayers().forEach((player) -> {
-                                WrapperPlayServerPlayerInfoUpdate wrapper = new WrapperPlayServerPlayerInfoUpdate(EnumSet.of(ADD_PLAYER, INITIALIZE_CHAT, UPDATE_GAME_MODE, UPDATE_LISTED, UPDATE_LATENCY, UPDATE_DISPLAY_NAME), RedisInfoObject.deserialize(packetObject.getObjects()));
+                                packets.forEach((packet) -> {
+                                    playerManager.sendPacketSilently(player, packet);
+                                });
+                                WrapperPlayServerPlayerInfoUpdate wrapper = new WrapperPlayServerPlayerInfoUpdate(EnumSet.of(ADD_PLAYER, INITIALIZE_CHAT, UPDATE_GAME_MODE, UPDATE_LISTED, UPDATE_LATENCY, UPDATE_DISPLAY_NAME), playerInfo);
                                 TabUtil.updateTab(player, PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().tablistHeader()), PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().tablistFooter()), wrapper);
                             });
                         }

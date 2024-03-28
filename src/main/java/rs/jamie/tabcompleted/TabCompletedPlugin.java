@@ -28,11 +28,11 @@ public final class TabCompletedPlugin extends JavaPlugin {
         RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
         LuckPerms luckperms = null;
         if (provider != null) luckperms = provider.getProvider();
+        packetManager = new PacketManager(this, configManager);
+        scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         if(configManager.getConfig().multiserverEnabled()) {
             redisManager = new RedisManager(this, configManager);
         }
-        packetManager = new PacketManager(this, configManager);
-        scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         new TabUpdateTask(this, configManager, redisManager);
         new TeamUpdateTask(this, configManager, luckperms);
         new ScoreboardUpdateTask(this, configManager);
