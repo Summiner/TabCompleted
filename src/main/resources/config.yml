@@ -6,7 +6,9 @@ tablist:
   # Format for the player's tab display name, works with PAPI
   player-name: '%luckperms_prefix%%player_name%'
 nametag:
+  # Prefix that is added to the player's nametag
   prefix: "%luckperms_prefix%%player_name%%luckperms_suffix%"
+  # Suffix that is added to the player's nametag
   suffix: "%luckperms_suffix%"
 scoreboard:
   # Should the scoreboard feature of this plugin be enabled?
@@ -17,5 +19,19 @@ scoreboard:
   entries:
     - "<gray>Ping: <white>%player_ping%"
     - "<red>Test"
+multi-server:
+  # Should we enable multi-server support, this means that every connected server will update tab users between each other. all config options are still independent excluding the player's prefix and suffix
+  enabled: false
+  # Unique identifier for this node on your mutli-server network
+  name: "TabCompleted-Server-1"
+  # What channel should we listen on? This MUST be the same for all servers you want to be linked, you can use different channels on the same network but players will be seperated by channels
+  channel: "TabCompleted-Channel-1"
+  # Ip used to connect to the redis server
+  ip: "192.168.0.233"
+  # Port used to connect to the redis server
+  port: 20050
+  # Password used to connect to the redis server
+  password: "abc123"
 misc:
+  # Should player collision be enabled?
   collision: true

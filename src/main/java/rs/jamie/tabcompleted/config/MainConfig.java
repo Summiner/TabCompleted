@@ -58,8 +58,44 @@ public interface MainConfig {
     @ConfDefault.DefaultStrings({"<gray>Ping: <white>%player_ping%", "<red>Test"})
     Component[] scoreboardEntries();
 
-    @ConfKey("misc.collision")
+    @ConfKey("multi-server.enabled")
     @Order(9)
+    @ConfComments("Should we enable multi-server support, this means that every connected server will update tab users between each other. all config options are still independent excluding the player's prefix and suffix?")
+    @ConfDefault.DefaultBoolean(false)
+    Boolean multiserverEnabled();
+
+    @ConfKey("multi-server.name")
+    @Order(10)
+    @ConfComments("Unique identifier for this node on your mutli-server network")
+    @DefaultString("TabCompleted-Server-1")
+    String multiserverName();
+
+    @ConfKey("multi-server.channel")
+    @Order(11)
+    @ConfComments("What channel should we listen on? This MUST be the same for all servers you want to be linked, you can use different channels on the same network but players will be seperated by channels")
+    @DefaultString("TabCompleted-Channel-1")
+    String multiserverChannel();
+
+    @ConfKey("multi-server.ip")
+    @Order(12)
+    @ConfComments("Ip used to connect to the redis server")
+    @DefaultString("192.168.0.233")
+    String multiserverIP();
+
+    @ConfKey("multi-server.port")
+    @Order(13)
+    @ConfComments("Port used to connect to the redis server")
+    @DefaultInteger(20050)
+    Integer multiserverPort();
+
+    @ConfKey("multi-server.password")
+    @Order(14)
+    @ConfComments("Password used to connect to the redis server")
+    @DefaultString("abc123")
+    String multiserverPassword();
+
+    @ConfKey("misc.collision")
+    @Order(15)
     @ConfComments("Should player collision be enabled?")
     @ConfDefault.DefaultBoolean(true)
     Boolean miscCollision();
