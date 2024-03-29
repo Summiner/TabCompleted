@@ -15,6 +15,7 @@ import org.bukkit.plugin.Plugin;
 import rs.jamie.tabcompleted.config.ConfigManager;
 import rs.jamie.tabcompleted.utils.LuckPermsUtil;
 import rs.jamie.tabcompleted.utils.PapiUtil;
+import rs.jamie.tabcompleted.utils.TeamUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,52 +31,15 @@ import static com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayS
 
 public class TeamUpdateTask {
 
-    public static HashMap<UUID, String> lastTeams = new HashMap<>();
+
     private final PlayerManager playerManager;
 
-    private String getTeamName(int weight, int entityID) {
-        return "TabListed-Weighted-" + Character.MAX_VALUE + (Character.MAX_VALUE - (char) weight)+"-"+entityID;
-    }
 
-    private TextColor getLastColor(Component component) {
-        if (component instanceof TextComponent) {
-            TextColor color = component.color();
-            if (color != null) return color;
-        } else {
-            List<Component> children = component.children();
-            for(int i=1;i<=children.size();i++) {
-                Component child = children.get(children.size()-i);
-                if(child instanceof TextComponent) {
-                    TextColor color = child.color();
-                    if(color!=null) return color;
-                }
-            }
-        }
-        return NamedTextColor.WHITE;
-    }
 
     public TeamUpdateTask(Plugin plugin, ConfigManager config, LuckPerms luckPerms) {
         playerManager = PacketEvents.getAPI().getPlayerManager();
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-            List<WrapperPlayServerTeams> packets = new ArrayList<>();
-            CollisionRule collision = config.getConfig().miscCollision()?CollisionRule.ALWAYS:CollisionRule.NEVER;
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                lastTeams.putIfAbsent(player.getUniqueId(), "");
-                String lastTeam = lastTeams.get(player.getUniqueId());
-                int weight = LuckPermsUtil.getWeight(player.getUniqueId(), luckPerms);
-                String teamName = getTeamName(weight, player.getEntityId());
-                if(!teamName.equals(lastTeam)) {
-                    if(!teamName.isEmpty()) {
-                        packets.add(new WrapperPlayServerTeams(lastTeam, TeamMode.REMOVE, (ScoreBoardTeamInfo) null, player.getName()));
-                    }
-                    Component prefix = PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().nametagPrefix());
-                    ScoreBoardTeamInfo teamInfo = new ScoreBoardTeamInfo(Component.text(teamName), prefix,
-                            PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().nametagSuffix()),
-                            NameTagVisibility.ALWAYS, collision, NamedTextColor.nearestTo(getLastColor(prefix)), OptionData.NONE);
-                    packets.add(new WrapperPlayServerTeams(teamName, TeamMode.CREATE, teamInfo, player.getName()));
-                }
-                lastTeams.put(player.getUniqueId(), teamName);
-            }
+            List<WrapperPlayServerTeams> packets = TeamUtil.updateTeams(config, luckPerms);
             Bukkit.getOnlinePlayers().forEach((player) -> {
                 packets.forEach((packet) -> {
                     playerManager.sendPacketSilently(player, packet);

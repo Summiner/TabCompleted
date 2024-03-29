@@ -78,20 +78,14 @@ public class RedisManager {
                             List<WrapperPlayServerTeams> packets = new ArrayList<>();
                             WrapperPlayServerTeams.CollisionRule collision = config.getConfig().miscCollision()? WrapperPlayServerTeams.CollisionRule.ALWAYS: WrapperPlayServerTeams.CollisionRule.NEVER;
                             for (PlayerInfoObject info : packetObject.getObjects()) {
-                                UUID uuid = info.gameProfile().getUUID();
-                                playerInfo.add(new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(info.gameProfile(), true, info.ping(), info.gameMode(), MiniMessage.miniMessage().deserialize(info.displayName()), null));
-                                TeamUpdateTask.lastTeams.putIfAbsent(uuid, "");
-                                String lastTeam = TeamUpdateTask.lastTeams.get(uuid);
                                 String team = info.team();
-                                if(!team.equals(lastTeam)) {
-                                    if(!team.isEmpty()) {
-                                        packets.add(new WrapperPlayServerTeams(lastTeam, WrapperPlayServerTeams.TeamMode.REMOVE, (WrapperPlayServerTeams.ScoreBoardTeamInfo) null, info.gameProfile().getName()));
-                                    }
+                                playerInfo.add(new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(info.gameProfile(), true, info.ping(), info.gameMode(), MiniMessage.miniMessage().deserialize(info.displayName()), null));
+                                if(team!=null) {
+                                    packets.add(new WrapperPlayServerTeams(team, WrapperPlayServerTeams.TeamMode.REMOVE, (WrapperPlayServerTeams.ScoreBoardTeamInfo) null, info.gameProfile().getName()));
                                     WrapperPlayServerTeams.ScoreBoardTeamInfo teamInfo = new WrapperPlayServerTeams.ScoreBoardTeamInfo(Component.text(""), Component.text(""), Component.text(""),
                                             WrapperPlayServerTeams.NameTagVisibility.NEVER, collision, NamedTextColor.WHITE, WrapperPlayServerTeams.OptionData.NONE);
                                     packets.add(new WrapperPlayServerTeams(team, WrapperPlayServerTeams.TeamMode.CREATE, teamInfo, info.gameProfile().getName()));
                                 }
-                                TeamUpdateTask.lastTeams.put(uuid, team);
                             }
                             Bukkit.getOnlinePlayers().forEach((player) -> {
                                 packets.forEach((packet) -> {
