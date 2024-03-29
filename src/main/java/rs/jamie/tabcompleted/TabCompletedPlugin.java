@@ -9,6 +9,7 @@ import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.Jedis;
 import rs.jamie.tabcompleted.config.ConfigManager;
 import rs.jamie.tabcompleted.events.PlayerLoginEvent;
+import rs.jamie.tabcompleted.events.PlayerQuitEvent;
 import rs.jamie.tabcompleted.packets.PacketManager;
 import rs.jamie.tabcompleted.redis.RedisManager;
 import rs.jamie.tabcompleted.tasks.ScoreboardUpdateTask;
@@ -37,6 +38,7 @@ public final class TabCompletedPlugin extends JavaPlugin {
         new TeamUpdateTask(this, configManager, luckperms);
         new ScoreboardUpdateTask(this, configManager);
         Bukkit.getPluginManager().registerEvents(new PlayerLoginEvent(configManager, scoreboard), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerQuitEvent(configManager, redisManager), this);
     }
 
     @Override

@@ -21,6 +21,7 @@ public class TeamUtil {
     public static HashMap<UUID, String> lastTeam = new HashMap<>();
 
     public static HashMap<UUID, String> updatedPlayers = new HashMap<>();
+    public static HashMap<UUID, String> lastCrossServerTeam = new HashMap<>();
 
     public static String getTeamName(int weight, UUID uuid) {
         return "TabListed-Weighted-" + Character.MAX_VALUE + (Character.MAX_VALUE - (char) weight)+"-"+uuid;

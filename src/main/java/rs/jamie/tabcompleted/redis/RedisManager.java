@@ -2,6 +2,7 @@ package rs.jamie.tabcompleted.redis;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.player.PlayerManager;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoRemove;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams;
 import com.google.common.reflect.TypeToken;
@@ -22,6 +23,7 @@ import rs.jamie.tabcompleted.tasks.TeamUpdateTask;
 import rs.jamie.tabcompleted.utils.LuckPermsUtil;
 import rs.jamie.tabcompleted.utils.PapiUtil;
 import rs.jamie.tabcompleted.utils.TabUtil;
+import rs.jamie.tabcompleted.utils.TeamUtil;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -30,6 +32,7 @@ import java.util.logging.Logger;
 
 import static com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate.Action.*;
 import static com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_DISPLAY_NAME;
+import static rs.jamie.tabcompleted.utils.TeamUtil.lastCrossServerTeam;
 
 public class RedisManager {
 
@@ -45,7 +48,7 @@ public class RedisManager {
         this.config = config;
         playerManager = PacketEvents.getAPI().getPlayerManager();
         gson = new Gson();
-        CompletableFuture.supplyAsync(() -> {
+        CompletableFuture.runAsync(() -> {
             try {
                 DefaultJedisClientConfig clientConfig = DefaultJedisClientConfig.builder().password(config.getConfig().multiserverPassword()).build();
                 publisher = new Jedis(config.getConfig().multiserverIP(), config.getConfig().multiserverPort(), clientConfig);
@@ -54,7 +57,6 @@ public class RedisManager {
                 e.printStackTrace();
             }
             load(logger);
-            return null;
         });
     }
 
@@ -73,6 +75,15 @@ public class RedisManager {
                 try {
                     RedisInfoObject packetObject = deserialize(message);
                     if (!Objects.equals(packetObject.getServer(), config.getConfig().multiserverName())) {
+                        if(packetObject.getType()==InfoType.REMOVE) {
+                            PlayerInfoObject info = packetObject.getObjects().get(0);
+                            UUID uuid = info.gameProfile().getUUID();
+                            WrapperPlayServerPlayerInfoRemove wrapper = new WrapperPlayServerPlayerInfoRemove(uuid);
+                            lastCrossServerTeam.remove(uuid);
+                            Bukkit.getOnlinePlayers().forEach((player) -> {
+                                playerManager.sendPacket(player, wrapper);
+                            });
+                        }
                         if(packetObject.getType()==InfoType.UPDATE) {
                             List<WrapperPlayServerPlayerInfoUpdate.PlayerInfo> playerInfo = new ArrayList<>();
                             List<WrapperPlayServerTeams> packets = new ArrayList<>();
@@ -81,10 +92,14 @@ public class RedisManager {
                                 String team = info.team();
                                 playerInfo.add(new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(info.gameProfile(), true, info.ping(), info.gameMode(), MiniMessage.miniMessage().deserialize(info.displayName()), null));
                                 if(team!=null) {
-                                    packets.add(new WrapperPlayServerTeams(team, WrapperPlayServerTeams.TeamMode.REMOVE, (WrapperPlayServerTeams.ScoreBoardTeamInfo) null, info.gameProfile().getName()));
+                                    String lastTeam = lastCrossServerTeam.get(info.gameProfile().getUUID());
+                                    if(lastTeam!=null) {
+                                        packets.add(new WrapperPlayServerTeams(lastTeam, WrapperPlayServerTeams.TeamMode.REMOVE, (WrapperPlayServerTeams.ScoreBoardTeamInfo) null, info.gameProfile().getName()));
+                                    }
                                     WrapperPlayServerTeams.ScoreBoardTeamInfo teamInfo = new WrapperPlayServerTeams.ScoreBoardTeamInfo(Component.text(""), Component.text(""), Component.text(""),
                                             WrapperPlayServerTeams.NameTagVisibility.NEVER, collision, NamedTextColor.WHITE, WrapperPlayServerTeams.OptionData.NONE);
                                     packets.add(new WrapperPlayServerTeams(team, WrapperPlayServerTeams.TeamMode.CREATE, teamInfo, info.gameProfile().getName()));
+                                    lastCrossServerTeam.put(info.gameProfile().getUUID(), team);
                                 }
                             }
                             Bukkit.getOnlinePlayers().forEach((player) -> {
