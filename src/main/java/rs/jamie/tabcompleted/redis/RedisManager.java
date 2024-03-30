@@ -74,6 +74,7 @@ public class RedisManager {
             public void onMessage(String channel, String message) {
                 try {
                     RedisInfoObject packetObject = deserialize(message);
+                    // TODO: add method to detect if a user provided by another server already exists and ignore sending their information
                     if (!Objects.equals(packetObject.getServer(), config.getConfig().multiserverName())) {
                         if(packetObject.getType()==InfoType.REMOVE) {
                             PlayerInfoObject info = packetObject.getObjects().get(0);
