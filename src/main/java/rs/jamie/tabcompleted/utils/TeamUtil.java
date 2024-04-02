@@ -1,5 +1,6 @@
 package rs.jamie.tabcompleted.utils;
 
+import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -66,6 +67,28 @@ public class TeamUtil {
             lastTeam.put(player.getUniqueId(), teamName);
         }
         return packets;
+    }
+
+    public static List<WrapperPlayServerTeams> getTeams(ConfigManager config, LuckPerms luckPerms) {
+        List<WrapperPlayServerTeams> packets = new ArrayList<>();
+        WrapperPlayServerTeams.CollisionRule collision = config.getConfig().miscCollision()? WrapperPlayServerTeams.CollisionRule.ALWAYS: WrapperPlayServerTeams.CollisionRule.NEVER;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            int weight = LuckPermsUtil.getWeight(player.getUniqueId(), luckPerms);
+            String teamName = getTeamName(weight, player.getUniqueId());
+            Component prefix = PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().nametagPrefix());
+            WrapperPlayServerTeams.ScoreBoardTeamInfo teamInfo = new WrapperPlayServerTeams.ScoreBoardTeamInfo(Component.text(teamName), prefix,
+                        PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().nametagSuffix()),
+                        WrapperPlayServerTeams.NameTagVisibility.ALWAYS, collision, NamedTextColor.nearestTo(getLastColor(prefix)), WrapperPlayServerTeams.OptionData.NONE);
+            packets.add(new WrapperPlayServerTeams(teamName, WrapperPlayServerTeams.TeamMode.CREATE, teamInfo, player.getName()));
+        }
+        return packets;
+    }
+
+    public static void updatePlayer(ConfigManager configManager, LuckPerms luckPerms, Player player) {
+        for(WrapperPlayServerTeams packet : getTeams(configManager, luckPerms)) {
+            if(player==null) break;
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+        }
     }
 
 }

@@ -20,7 +20,6 @@ public final class TabCompletedPlugin extends JavaPlugin {
 
     private PacketManager packetManager;
     private RedisManager redisManager;
-    private Scoreboard scoreboard;
 
     @Override
     public void onEnable() {
@@ -30,14 +29,13 @@ public final class TabCompletedPlugin extends JavaPlugin {
         LuckPerms luckperms = null;
         if (provider != null) luckperms = provider.getProvider();
         packetManager = new PacketManager(this, configManager);
-        scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         if(configManager.getConfig().multiserverEnabled()) {
             redisManager = new RedisManager(this, configManager);
         }
         new TabUpdateTask(this, configManager, redisManager);
         new TeamUpdateTask(this, configManager, luckperms);
         new ScoreboardUpdateTask(this, configManager);
-        Bukkit.getPluginManager().registerEvents(new PlayerLoginEvent(configManager, scoreboard), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerLoginEvent(configManager, luckperms), this);
         Bukkit.getPluginManager().registerEvents(new PlayerQuitEvent(configManager, redisManager), this);
     }
 

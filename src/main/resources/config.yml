@@ -5,11 +5,6 @@ tablist:
   footer: '<newline><gray>Ping: <white>%player_ping%<newline>'
   # Format for the player's tab display name, works with PAPI
   player-name: '%luckperms_prefix%%player_name%'
-nametag:
-  # Prefix that is added to the player's nametag
-  prefix: "%luckperms_prefix%%player_name%%luckperms_suffix%"
-  # Suffix that is added to the player's nametag
-  suffix: "%luckperms_suffix%"
 scoreboard:
   # Should the scoreboard feature of this plugin be enabled?
   enabled: true
@@ -35,3 +30,4 @@ multi-server:
 misc:
   # Should player collision be enabled?
   collision: true
+  nametag: "%luckperms_prefix%%player_name%%luckperms_suffix%"

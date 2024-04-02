@@ -8,6 +8,7 @@ import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetPassengers;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.luckperms.api.LuckPerms;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -22,6 +23,7 @@ import rs.jamie.tabcompleted.config.ConfigManager;
 import rs.jamie.tabcompleted.utils.PapiUtil;
 import rs.jamie.tabcompleted.utils.ScoreboardUtil;
 import rs.jamie.tabcompleted.utils.TabUtil;
+import rs.jamie.tabcompleted.utils.TeamUtil;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -31,23 +33,17 @@ import static com.github.retrooper.packetevents.protocol.entity.type.EntityTypes
 public class PlayerLoginEvent implements Listener {
 
     private final ConfigManager config;
-    private final Scoreboard scoreboard;
+    private final LuckPerms luckPerms;
 
-    public PlayerLoginEvent(ConfigManager config, Scoreboard scoreboard) {
-        this.scoreboard = scoreboard;
+    public PlayerLoginEvent(ConfigManager config, LuckPerms luckPerms) {
+        this.luckPerms = luckPerms;
         this.config = config;
     }
 
     @EventHandler
     public void onPlayerLoginReceive(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        for (Team team : scoreboard.getTeams()) {
-            team.removeEntry(player.getName());
-        }
-
-        //CHANGE
-        player.setScoreboard(scoreboard);
-
+        TeamUtil.updatePlayer(config, luckPerms, event.getPlayer());
         TabUtil.updateTab(player, PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().tablistHeader()), PapiUtil.set(LegacyComponentSerializer.legacyAmpersand(), player, config.getConfig().tablistFooter()));
         ScoreboardUtil.setupScoreboard(player, config.getConfig().scoreboardName(), config.getConfig().scoreboardEntries());
     }
